@@ -1,0 +1,47 @@
+appId: com.watchtracker.app
+productName: Watch Tracker
+directories:
+  output: release
+  buildResources: build
+
+# asar packaging is deliberately off for this first release: the main
+# process reads drizzle/migrations/*.sql off disk at startup and loads
+# sql.js's WASM binary from node_modules — both work fine through Electron's
+# asar read shim in principle, but an unpacked app directory removes that as
+# a variable entirely for a first packaged build, at the cost of a slightly
+# larger/less tidy install folder.
+asar: false
+
+files:
+  - out/**/*
+  - drizzle/migrations/**/*
+  - build/icon.png
+  - package.json
+  - node_modules/**/*
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: build/icon.ico
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Watch Tracker
+
+linux:
+  target:
+    - AppImage
+  category: AudioVideo
+  icon: build/icon.png
+
+mac:
+  target:
+    - dmg
+  category: public.app-category.entertainment
+  icon: build/icon.icns

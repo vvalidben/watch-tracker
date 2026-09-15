@@ -1,0 +1,1 @@
+CREATE INDEX `media_tags_tag_idx` ON `media_tags` (`tag_id`);

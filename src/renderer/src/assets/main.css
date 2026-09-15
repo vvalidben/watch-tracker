@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 98%;
+    --foreground: 224 20% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 20% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 20% 11%;
+    --primary: 38 88% 47%;
+    --primary-foreground: 26 45% 10%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 224 20% 14%;
+    --muted: 220 16% 95%;
+    --muted-foreground: 220 9% 42%;
+    --accent: 220 15% 91%;
+    --accent-foreground: 224 20% 14%;
+    --destructive: 0 72% 48%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 152 55% 34%;
+    --success-foreground: 0 0% 100%;
+    --favorite: 350 75% 50%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 38 88% 47%;
+    --sidebar: 220 22% 96%;
+    --sidebar-border: 220 13% 88%;
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    --background: 224 22% 7%;
+    --foreground: 210 20% 96%;
+    --card: 222 19% 10%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 20% 9.5%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 42 96% 56%;
+    --primary-foreground: 26 45% 9%;
+    --secondary: 222 15% 15.5%;
+    --secondary-foreground: 210 15% 92%;
+    --muted: 222 14% 13.5%;
+    --muted-foreground: 217 10% 62%;
+    --accent: 222 16% 17.5%;
+    --accent-foreground: 210 20% 96%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 152 50% 46%;
+    --success-foreground: 152 60% 96%;
+    --favorite: 350 78% 60%;
+    --border: 222 14% 17%;
+    --input: 222 14% 17%;
+    --ring: 42 96% 56%;
+    --sidebar: 226 26% 5.5%;
+    --sidebar-border: 222 16% 13%;
+    --radius: 0.85rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-feature-settings:
+      'cv02',
+      'cv03',
+      'cv04',
+      'cv11';
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    font-family:
+      'Inter Variable',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
+
+  /* Subtle themed scrollbars — avoids the jarring default OS scrollbar clashing with a dark UI. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.25);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.4);
+  }
+}
+
+@layer utilities {
+  /* A single reusable dark gradient for legibility over backdrop/hero imagery. */
+  .bg-hero-fade {
+    background: linear-gradient(
+      to top,
+      hsl(var(--background)) 0%,
+      hsl(var(--background) / 0.85) 30%,
+      hsl(var(--background) / 0.25) 65%,
+      transparent 100%
+    );
+  }
+  .bg-hero-fade-x {
+    background: linear-gradient(to right, hsl(var(--background)) 0%, transparent 55%);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
