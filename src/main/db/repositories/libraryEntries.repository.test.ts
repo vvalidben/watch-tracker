@@ -224,6 +224,22 @@ describe('libraryEntries repository', () => {
       expect(results).toHaveLength(1)
     })
 
+    it('searches by romaji title when the original title is in Japanese', async () => {
+      const anime = await ctx.repositories.mediaItems.create({
+        type: 'anime',
+        title: 'Frieren: Beyond Journey’s End',
+        originalTitle: '葬送のフリーレン',
+        romajiTitle: 'Sousou no Frieren',
+        source: 'anilist',
+        sourceId: '154587'
+      })
+      await ctx.repositories.libraryEntries.add({ mediaItemId: anime.id })
+
+      const results = await ctx.repositories.libraryEntries.listLibraryView({ search: 'sousou' })
+
+      expect(results.map((result) => result.mediaItem.id)).toEqual([anime.id])
+    })
+
     it('combines multiple filters (AND semantics)', async () => {
       const anime = await ctx.repositories.mediaItems.create({ type: 'anime', title: 'Frieren', source: 'manual' })
       const otherAnime = await ctx.repositories.mediaItems.create({

@@ -1,6 +1,7 @@
-import { mkdtempSync, rmSync } from 'node:fs'
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { sql } from 'drizzle-orm'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { openDatabase } from './client'
 import { createRepositories } from './repositories'
@@ -68,5 +69,29 @@ describe('database migrations', () => {
     expect(items).toHaveLength(1)
     expect(items[0].title).toBe('Persisted Movie')
     second.close()
+  })
+
+  it('upgrades a library saved before romaji titles existed without losing its rows', async () => {
+    const dbPath = join(workDir, 'existing-library.db')
+    const oldMigrations = join(workDir, 'old-migrations')
+    cpSync(migrationsFolder, oldMigrations, { recursive: true })
+    const journalPath = join(oldMigrations, 'meta', '_journal.json')
+    const journal = JSON.parse(readFileSync(journalPath, 'utf-8')) as { entries: { tag: string }[] }
+    const lastOldEntry = journal.entries.findIndex((entry) => entry.tag === '0003_robust_purple_man')
+    writeFileSync(journalPath, JSON.stringify({ ...journal, entries: journal.entries.slice(0, lastOldEntry + 1) }))
+
+    const old = await openDatabase({ filePath: dbPath, migrationsFolder: oldMigrations })
+    old.db.run(sql`
+      INSERT INTO media_items (type, title, original_title, source, source_id, created_at, updated_at)
+      VALUES ('anime', 'Frieren', 'Sousou no Frieren', 'anilist', '154587', '2026-01-01', '2026-01-01')
+    `)
+    old.persist()
+    old.close()
+
+    const upgraded = await openDatabase({ filePath: dbPath, migrationsFolder })
+    const [item] = await createRepositories({ db: upgraded.db, persist: upgraded.persist }).mediaItems.list()
+
+    expect(item).toMatchObject({ title: 'Frieren', originalTitle: 'Sousou no Frieren', romajiTitle: null, sourceId: '154587' })
+    upgraded.close()
   })
 })

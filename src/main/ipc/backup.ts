@@ -103,7 +103,8 @@ export function registerBackupIpc(context: BackupIpcContext): void {
         return { ok: true, data: { cancelled: true, restarting: false, exportedAt: null } }
       }
 
-      writeAppConfig(context.configPath, { ...config, defaultBackupDirectory: dirname(filePaths[0]) })
+      // A backup can predate the anime title backfill, so let it run again after the restart.
+      writeAppConfig(context.configPath, { ...config, defaultBackupDirectory: dirname(filePaths[0]), animeTitleBackfillDone: false })
       await restoreBackup(parsed.backup, { migrationsFolder: context.migrationsFolder, targetDbPath: context.dbPath })
 
       // Relaunch after replying, so the renderer gets a chance to show the

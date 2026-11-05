@@ -66,7 +66,7 @@ function renderApp(detailsElement: JSX.Element = <DetailsStub />) {
 }
 
 async function typeQuery(value: string) {
-  const input = screen.getByPlaceholderText('Search movies, TV series, or anime…')
+  const input = screen.getByPlaceholderText('Search by title…')
   fireEvent.change(input, { target: { value } })
 }
 
@@ -76,7 +76,7 @@ describe('Search page: state preservation across Details → Back', () => {
   beforeEach(() => {
     clearSearchResultsCache()
     searchMedia = vi.fn()
-    ;(window as unknown as { api: { searchMedia: typeof searchMedia } }).api = { searchMedia }
+    ;(window as unknown as { api: unknown }).api = { searchMedia, listLibrary: vi.fn().mockResolvedValue({ items: [] }) }
   })
 
   afterEach(() => {
@@ -88,13 +88,13 @@ describe('Search page: state preservation across Details → Back', () => {
     renderApp()
 
     await typeQuery('attack')
-    fireEvent.click(screen.getByRole('button', { name: 'TV Series' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Series' }))
 
-    await waitFor(() => expect(screen.getByText('Attack on Titan')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Attack on Titan' })).toBeInTheDocument())
     expect(searchMedia).toHaveBeenCalledTimes(1)
     expect(searchMedia).toHaveBeenCalledWith({ query: 'attack', types: ['tv'] })
 
-    fireEvent.click(screen.getByText('Attack on Titan'))
+    fireEvent.click(screen.getByRole('button', { name: 'Attack on Titan' }))
     expect(screen.getByRole('button', { name: 'Back' })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
@@ -103,8 +103,8 @@ describe('Search page: state preservation across Details → Back', () => {
     // "tv" filter hadn't survived, restoring would look up a different
     // cache key (or none), forcing a second, differently-filtered request —
     // so "still called exactly once" is direct proof the filter persisted.
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('attack')
-    expect(screen.getByText('Attack on Titan')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('attack')
+    expect(screen.getByRole('button', { name: 'Attack on Titan' })).toBeInTheDocument()
     expect(searchMedia).toHaveBeenCalledTimes(1)
   })
 
@@ -113,13 +113,13 @@ describe('Search page: state preservation across Details → Back', () => {
     renderApp()
 
     await typeQuery('breaking bad')
-    await waitFor(() => expect(screen.getByText('Breaking Bad')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Breaking Bad' })).toBeInTheDocument())
 
-    fireEvent.click(screen.getByText('Breaking Bad'))
+    fireEvent.click(screen.getByRole('button', { name: 'Breaking Bad' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
 
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('breaking bad')
-    expect(screen.getByText('Breaking Bad')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('breaking bad')
+    expect(screen.getByRole('button', { name: 'Breaking Bad' })).toBeInTheDocument()
     expect(searchMedia).toHaveBeenCalledTimes(1)
   })
 
@@ -128,13 +128,13 @@ describe('Search page: state preservation across Details → Back', () => {
     renderApp()
 
     await typeQuery('inception')
-    fireEvent.click(screen.getByRole('button', { name: 'Movies' }))
-    await waitFor(() => expect(screen.getByText('Inception')).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: 'Films' }))
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Inception' })).toBeInTheDocument())
 
-    fireEvent.click(screen.getByText('Inception'))
+    fireEvent.click(screen.getByRole('button', { name: 'Inception' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
 
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('inception')
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('inception')
     expect(searchMedia).toHaveBeenCalledTimes(1)
   })
 
@@ -143,13 +143,13 @@ describe('Search page: state preservation across Details → Back', () => {
     renderApp(<RawHistoryBackStub />)
 
     await typeQuery('matrix')
-    await waitFor(() => expect(screen.getByText('The Matrix')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: 'The Matrix' })).toBeInTheDocument())
 
-    fireEvent.click(screen.getByText('The Matrix'))
+    fireEvent.click(screen.getByRole('button', { name: 'The Matrix' }))
     fireEvent.click(screen.getByRole('button', { name: 'Browser Back' }))
 
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('matrix')
-    expect(screen.getByText('The Matrix')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('matrix')
+    expect(screen.getByRole('button', { name: 'The Matrix' })).toBeInTheDocument()
     expect(searchMedia).toHaveBeenCalledTimes(1)
   })
 
@@ -158,16 +158,16 @@ describe('Search page: state preservation across Details → Back', () => {
     renderApp()
 
     await typeQuery('attack')
-    await waitFor(() => expect(screen.getByText('Attack on Titan')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Attack on Titan' })).toBeInTheDocument())
 
-    fireEvent.click(screen.getByText('Attack on Titan'))
+    fireEvent.click(screen.getByRole('button', { name: 'Attack on Titan' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('attack')
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('attack')
 
-    fireEvent.click(screen.getByText('Attack on Titan'))
+    fireEvent.click(screen.getByRole('button', { name: 'Attack on Titan' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
-    expect(screen.getByPlaceholderText('Search movies, TV series, or anime…')).toHaveValue('attack')
-    expect(screen.getByText('Attack on Titan')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search by title…')).toHaveValue('attack')
+    expect(screen.getByRole('button', { name: 'Attack on Titan' })).toBeInTheDocument()
 
     // Every visit reused the one cached search — never re-fetched.
     expect(searchMedia).toHaveBeenCalledTimes(1)

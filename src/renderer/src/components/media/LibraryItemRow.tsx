@@ -1,59 +1,63 @@
-import { Heart, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { extractYear } from '@renderer/lib/mediaFormatting'
-import { StatusBadge } from '@renderer/components/media/StatusBadge'
-import { Progress } from '@renderer/components/ui/progress'
+import { Poster } from '@renderer/components/neon/Poster'
+import { libraryProgressText } from '@renderer/components/media/LibraryItemCard'
+import { japaneseTitle } from '@renderer/lib/posterArt'
+import {
+  extractYear,
+  formatShortDate,
+  mediaPath,
+  mediaTypeLabel,
+  ratingLabel,
+  watchStatusLabel
+} from '@renderer/lib/mediaFormatting'
 import type { LibraryItemDTO } from '@shared/library'
 
 interface LibraryItemRowProps {
   item: LibraryItemDTO
+  delayMs?: number
 }
 
-export function LibraryItemRow({ item }: LibraryItemRowProps): JSX.Element {
+export function LibraryItemRow({ item, delayMs = 0 }: LibraryItemRowProps): JSX.Element {
   const navigate = useNavigate()
-  const { mediaItem, libraryEntry, progress } = item
-  const canOpen = mediaItem.source !== 'manual' && mediaItem.sourceId !== null
-  const year = extractYear(mediaItem.releaseDate)
+  const { mediaItem, libraryEntry } = item
+  const path = mediaPath(mediaItem)
+  const jp = japaneseTitle(mediaItem.originalTitle)
 
   return (
-    <button
-      type="button"
-      disabled={!canOpen}
-      onClick={() => canOpen && navigate(`/media/${mediaItem.source}/${mediaItem.type}/${mediaItem.sourceId}`)}
-      className="group flex w-full items-center gap-3 rounded-xl border border-border bg-card p-2.5 text-left transition-colors duration-150 hover:border-primary/40 hover:bg-accent/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-60"
-    >
-      <div className="h-16 w-11 shrink-0 overflow-hidden rounded-md bg-muted">
-        {mediaItem.posterPath && (
-          <img src={mediaItem.posterPath} alt="" className="h-full w-full object-cover" loading="lazy" />
-        )}
-      </div>
-
-      <div className="min-w-0 flex-1 space-y-1">
-        <div className="flex items-center gap-2">
-          <h3 className="truncate text-sm font-medium">{mediaItem.title}</h3>
-          {libraryEntry.favorite && <Heart className="h-3.5 w-3.5 shrink-0 fill-favorite text-favorite" />}
-        </div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-          <StatusBadge kind="type" value={mediaItem.type} />
-          <StatusBadge kind="watch" value={libraryEntry.watchStatus} />
-          {year && <span>{year}</span>}
-        </div>
-        {progress && (
-          <div className="flex max-w-xs items-center gap-2 pt-0.5">
-            <Progress value={progress.percentage} className="h-1" />
-            <span className="shrink-0 text-[11px] text-muted-foreground">
-              {progress.watchedEpisodes}/{progress.totalEpisodes} &middot; {progress.percentage}%
+    <div className="wt-rise" style={{ animationDelay: `${delayMs}ms` }}>
+      <button type="button" className="wt-row wt-lib-row" disabled={!path} onClick={() => path && navigate(path)}>
+        <Poster
+          title={mediaItem.title}
+          originalTitle={mediaItem.originalTitle}
+          mediaType={mediaItem.type}
+          year={extractYear(mediaItem.releaseDate)}
+          image={mediaItem.posterPath}
+          favorite={libraryEntry.favorite}
+        />
+        <div className="wt-stack" style={{ minWidth: 0 }}>
+          <span className="wt-display wt-truncate" style={{ fontSize: 15 }}>
+            {mediaItem.title}
+          </span>
+          {jp && (
+            <span className="wt-jp wt-truncate" style={{ fontSize: 11, color: 'var(--wt-muted)' }}>
+              {jp}
             </span>
-          </div>
-        )}
-      </div>
-
-      {libraryEntry.rating !== null && (
-        <span className="flex shrink-0 items-center gap-1 text-sm font-medium">
-          <Star className="h-3.5 w-3.5 fill-primary text-primary" />
-          {libraryEntry.rating.toFixed(1)}
+          )}
+        </div>
+        <span className="wt-lib-optional" style={{ fontSize: 13 }}>
+          {mediaTypeLabel(mediaItem.type)}
         </span>
-      )}
-    </button>
+        <span className="wt-status-tag" style={{ justifySelf: 'start' }}>
+          {watchStatusLabel(libraryEntry.watchStatus)}
+        </span>
+        <span className="wt-tabular" style={{ fontSize: 12, color: 'var(--wt-muted)' }}>
+          {libraryProgressText(item)}
+        </span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--wt-a3)' }}>{ratingLabel(libraryEntry.rating)}</span>
+        <span className="wt-lib-optional" style={{ fontSize: 12, color: 'var(--wt-muted)' }}>
+          {formatShortDate(item.lastWatchedAt)}
+        </span>
+      </button>
+    </div>
   )
 }

@@ -21,19 +21,15 @@ export function SeasonRatingPanel({
   onSaveNotes
 }: SeasonRatingPanelProps): JSX.Element {
   return (
-    <div className="space-y-3 rounded-xl border border-border bg-card p-4">
+    <div className="space-y-3 rounded-[14px] p-4" style={{ background: 'var(--wt-sunken)' }}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3 rounded-lg border border-primary/25 bg-primary/10 px-3 py-2">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">Season Rating</p>
-            <div className="mt-1">
-              <RatingStars value={rating} onChange={onChange} readOnly={pending} />
-            </div>
-          </div>
+        <div className="wt-stack" style={{ gap: 6 }}>
+          <span className="wt-label">Season rating</span>
+          <RatingStars value={rating} onChange={onChange} readOnly={pending} />
         </div>
         {averageEpisodeRating !== null && (
           <p className="text-xs text-muted-foreground">
-            Avg. Episode Rating: <span className="font-medium text-foreground">{averageEpisodeRating.toFixed(1)}</span>
+            Average episode rating <span className="font-medium text-foreground">{averageEpisodeRating.toFixed(1)}</span>
           </p>
         )}
       </div>

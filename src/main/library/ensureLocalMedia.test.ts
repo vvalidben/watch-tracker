@@ -47,6 +47,12 @@ describe('getOrCreateMediaItem', () => {
     expect(item.genres).toEqual(['Drama'])
   })
 
+  it('saves the romaji title when the provider has one', async () => {
+    const item = await getOrCreateMediaItem(ctx.repositories, makeMedia({ source: 'anilist', mediaType: 'anime', romajiTitle: 'Sousou no Frieren' }))
+
+    expect(item.romajiTitle).toBe('Sousou no Frieren')
+  })
+
   it('never creates a second row for the same (source, externalId) — identified by external id, not title', async () => {
     const media = makeMedia()
     const first = await getOrCreateMediaItem(ctx.repositories, media)

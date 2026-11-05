@@ -25,15 +25,15 @@ export function SeriesWatchActions({
 
   return (
     <div className="flex flex-wrap gap-2">
-      <Button type="button" size="sm" variant="outline" disabled={pending} onClick={onMarkAllWatched}>
-        Mark entire series watched
-      </Button>
+      <button type="button" className="wt-ghost" disabled={pending} onClick={onMarkAllWatched}>
+        Mark series watched
+      </button>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogTrigger asChild>
-          <Button type="button" size="sm" variant="outline" disabled={pending}>
-            Mark entire series unwatched
-          </Button>
+          <button type="button" className="wt-ghost" disabled={pending}>
+            Clear series
+          </button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>

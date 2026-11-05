@@ -10,6 +10,8 @@ import { dirname } from 'node:path'
 export interface AppConfig {
   tmdbApiKey: string | null
   defaultBackupDirectory: string | null
+  /** Set once saved anime rows have been given their Japanese and romaji titles; restoring a backup clears it. */
+  animeTitleBackfillDone?: boolean
 }
 
 const DEFAULT_CONFIG: AppConfig = { tmdbApiKey: null, defaultBackupDirectory: null }
@@ -26,7 +28,8 @@ export function readAppConfig(filePath: string): AppConfig {
     if (!isPlainObject(raw)) return { ...DEFAULT_CONFIG }
     return {
       tmdbApiKey: typeof raw.tmdbApiKey === 'string' && raw.tmdbApiKey.trim().length > 0 ? raw.tmdbApiKey : null,
-      defaultBackupDirectory: typeof raw.defaultBackupDirectory === 'string' ? raw.defaultBackupDirectory : null
+      defaultBackupDirectory: typeof raw.defaultBackupDirectory === 'string' ? raw.defaultBackupDirectory : null,
+      ...(raw.animeTitleBackfillDone === true ? { animeTitleBackfillDone: true } : {})
     }
   } catch {
     return { ...DEFAULT_CONFIG }

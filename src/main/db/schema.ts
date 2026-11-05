@@ -14,6 +14,9 @@ export const mediaItems = sqliteTable(
     type: text('type', { enum: ['movie', 'tv', 'anime'] }).notNull(),
     title: text('title').notNull(),
     originalTitle: text('original_title'),
+    // AniList's latin-script name, kept so anime stays searchable by it now
+    // that originalTitle holds the Japanese title. Null for other sources.
+    romajiTitle: text('romaji_title'),
     overview: text('overview'),
     posterPath: text('poster_path'),
     backdropPath: text('backdrop_path'),

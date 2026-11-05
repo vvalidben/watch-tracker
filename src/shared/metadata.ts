@@ -26,6 +26,8 @@ export interface NormalizedMedia {
   mediaType: MediaType
   title: string
   originalTitle: string | null
+  /** The latin-script name, for searching the library. Omitted by providers that don't have one. */
+  romajiTitle?: string | null
   poster: string | null
   backdrop: string | null
   description: string | null

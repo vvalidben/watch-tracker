@@ -21,15 +21,12 @@ export function SeasonWatchActions({ pending, onMarkWatched, onMarkUnwatched }: 
 
   return (
     <div className="flex flex-wrap gap-2">
-      <Button type="button" size="sm" variant="outline" disabled={pending} onClick={onMarkWatched}>
-        Mark season watched
-      </Button>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogTrigger asChild>
-          <Button type="button" size="sm" variant="outline" disabled={pending}>
-            Mark season unwatched
-          </Button>
+          <button type="button" className="wt-ghost" disabled={pending}>
+            Clear season
+          </button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
@@ -56,6 +53,10 @@ export function SeasonWatchActions({ pending, onMarkWatched, onMarkUnwatched }: 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <button type="button" className="wt-btn wt-btn-cyan" disabled={pending} onClick={onMarkWatched}>
+        ✓ Whole season
+      </button>
     </div>
   )
 }

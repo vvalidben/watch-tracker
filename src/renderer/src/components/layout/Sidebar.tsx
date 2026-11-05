@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { Clapperboard, PanelLeftClose, PanelLeftOpen } from 'lucide-react'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { navItems } from '@renderer/lib/navigation'
 import { cn } from '@renderer/lib/utils'
 import { useSidebarCollapsed } from '@renderer/lib/sidebarPreference'
-import { Separator } from '@renderer/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@renderer/components/ui/tooltip'
 
-function AppVersion({ collapsed }: { collapsed: boolean }): JSX.Element {
-  const [version, setVersion] = useState<string>('')
+function useAppVersion(): string {
+  const [version, setVersion] = useState('')
 
   useEffect(() => {
     window.api
@@ -17,27 +16,28 @@ function AppVersion({ collapsed }: { collapsed: boolean }): JSX.Element {
       .catch(() => setVersion('unknown'))
   }, [])
 
-  if (collapsed) return <div className="py-3 text-center text-[10px] text-muted-foreground">v{version || '…'}</div>
-
-  return <div className="px-4 py-3 text-xs text-muted-foreground">Watch Tracker v{version || '...'}</div>
+  return version || '…'
 }
 
 export function Sidebar(): JSX.Element {
   const [collapsed, setCollapsed] = useSidebarCollapsed()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+  const version = useAppVersion()
+  const onDetailPage = pathname.startsWith('/media/')
 
   return (
-    <aside
-      className={cn(
-        'flex shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-200 ease-premium',
-        collapsed ? 'w-[68px]' : 'w-60'
-      )}
-    >
-      <div className={cn('flex items-center gap-2 px-4 py-4', collapsed && 'justify-center px-0')}>
-        <Clapperboard className="h-6 w-6 shrink-0 text-primary" />
-        {!collapsed && <span className="truncate text-lg font-semibold tracking-tight">Watch Tracker</span>}
+    <aside className={cn('wt-rail', collapsed && 'is-collapsed')}>
+      <div className="wt-stack" style={{ gap: 6, padding: collapsed ? 0 : '0 6px' }}>
+        <div className="wt-brand">{collapsed ? 'WT' : 'WATCH TRACKER'}</div>
+        {!collapsed && (
+          <span className="wt-page-jp wt-jp" style={{ fontSize: 11, letterSpacing: '0.32em', marginTop: 6 }}>
+            ウォッチトラッカー
+          </span>
+        )}
       </div>
-      <Separator className="bg-sidebar-border" />
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+
+      <nav className="wt-stack" style={{ gap: 6, flex: 1 }}>
         {navItems.map((item) => {
           const link = (
             <NavLink
@@ -45,22 +45,22 @@ export function Sidebar(): JSX.Element {
               to={item.path}
               end={item.path === '/'}
               className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  collapsed && 'justify-center px-0 py-2.5',
-                  isActive
-                    ? 'bg-primary/15 text-primary'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                )
+                cn('wt-nav-link', (isActive || (onDetailPage && item.path === '/library')) && 'is-on')
               }
             >
-              <item.icon className="h-4 w-4 shrink-0" />
-              {!collapsed && item.label}
+              <item.icon className="h-[18px] w-[18px] shrink-0" />
+              {!collapsed && (
+                <>
+                  <span style={{ fontWeight: 700, fontSize: 14, flex: 1 }}>{item.label}</span>
+                  <span className="wt-jp" style={{ fontWeight: 700, fontSize: 12, color: 'var(--wt-muted)' }}>
+                    {item.jp}
+                  </span>
+                </>
+              )}
             </NavLink>
           )
 
           if (!collapsed) return link
-
           return (
             <Tooltip key={item.path} delayDuration={200}>
               <TooltipTrigger asChild>{link}</TooltipTrigger>
@@ -69,21 +69,23 @@ export function Sidebar(): JSX.Element {
           )
         })}
       </nav>
-      <Separator className="bg-sidebar-border" />
-      <button
-        type="button"
-        onClick={() => setCollapsed(!collapsed)}
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        className={cn(
-          'flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground',
-          collapsed && 'justify-center px-0'
-        )}
-      >
-        {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-        {!collapsed && 'Collapse'}
+
+      <button type="button" className="wt-add-cta" aria-label="Add a title" onClick={() => navigate('/search')}>
+        {collapsed ? '＋' : '＋ Add a title'}
       </button>
-      <Separator className="bg-sidebar-border" />
-      <AppVersion collapsed={collapsed} />
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', padding: collapsed ? 0 : '0 6px' }}>
+        {!collapsed && <span style={{ fontSize: 11, color: 'var(--wt-muted)' }}>v{version} · local library</span>}
+        <button
+          type="button"
+          className="wt-quiet"
+          style={{ padding: 2, display: 'flex' }}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+        </button>
+      </div>
     </aside>
   )
 }

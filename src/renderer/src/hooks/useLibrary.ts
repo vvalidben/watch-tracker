@@ -8,6 +8,7 @@ export interface UseLibraryOptions {
   initialType?: LibraryTypeFilter
   initialStatus?: LibraryStatusFilter
   initialFavoritesOnly?: boolean
+  initialSort?: LibrarySortKey
 }
 
 export interface UseLibraryResult {
@@ -42,7 +43,7 @@ export function useLibrary(options: UseLibraryOptions = {}): UseLibraryResult {
   const [favoritesOnly, setFavoritesOnly] = useState(options.initialFavoritesOnly ?? false)
   const [tagId, setTagId] = useState<number | null>(null)
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState<LibrarySortKey>('recently_added')
+  const [sort, setSort] = useState<LibrarySortKey>(options.initialSort ?? 'recently_added')
   const [items, setItems] = useState<LibraryItemDTO[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

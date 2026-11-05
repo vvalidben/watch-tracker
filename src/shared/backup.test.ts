@@ -25,6 +25,18 @@ function makeMediaItem(overrides: Partial<LatestBackupFile['data']['mediaItems']
   }
 }
 
+describe('romajiTitle on a media item', () => {
+  it('is optional, so backups taken before it existed still load', () => {
+    expect(parseBackupFile(makeValidV2File()).ok).toBe(true)
+    expect(parseBackupFile(makeValidV2File({ mediaItems: [makeMediaItem({ romajiTitle: 'Sousou no Frieren' })] })).ok).toBe(true)
+  })
+
+  it('rejects a value that is not text', () => {
+    const file = makeValidV2File({ mediaItems: [makeMediaItem({ romajiTitle: 7 as unknown as string })] })
+    expect(parseBackupFile(file)).toMatchObject({ ok: false, error: expect.stringMatching(/romajiTitle/) })
+  })
+})
+
 function makeValidV2File(overrides: Partial<LatestBackupFile['data']> = {}): LatestBackupFile {
   return {
     formatVersion: 2,

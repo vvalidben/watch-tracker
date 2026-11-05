@@ -44,6 +44,27 @@ function makeBackup(overrides: Partial<LatestBackupFile['data']> = {}): LatestBa
 }
 
 describe('restoreBackup', () => {
+  it('keeps romaji titles through an export and restore', async () => {
+    const source = await openDatabase({ migrationsFolder })
+    await createRepositories({ db: source.db, persist: source.persist }).mediaItems.create({
+      type: 'anime',
+      title: 'Frieren',
+      originalTitle: '葬送のフリーレン',
+      romajiTitle: 'Sousou no Frieren',
+      source: 'anilist',
+      sourceId: '154587'
+    })
+    const backup = await buildBackupFile(source.db, '0.1.0')
+    source.close()
+
+    await restoreBackup(JSON.parse(JSON.stringify(backup)), { migrationsFolder, targetDbPath })
+
+    const opened = await openDatabase({ filePath: targetDbPath, migrationsFolder })
+    const [item] = await createRepositories({ db: opened.db, persist: opened.persist }).mediaItems.list()
+    expect(item.romajiTitle).toBe('Sousou no Frieren')
+    opened.close()
+  })
+
   it('creates a working database file at the target path from an empty backup', async () => {
     await restoreBackup(makeBackup(), { migrationsFolder, targetDbPath })
 

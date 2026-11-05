@@ -16,6 +16,7 @@ export async function getOrCreateMediaItem(repositories: Repositories, media: No
     type: media.mediaType,
     title: media.title,
     originalTitle: media.originalTitle,
+    romajiTitle: media.romajiTitle ?? null,
     overview: media.description,
     posterPath: media.poster,
     backdropPath: media.backdrop,

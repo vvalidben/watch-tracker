@@ -12,7 +12,7 @@ export default {
     extend: {
       fontFamily: {
         sans: [
-          'Inter Variable',
+          'Zen Kaku Gothic New',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',

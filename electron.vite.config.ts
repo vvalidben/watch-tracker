@@ -26,6 +26,11 @@ export default defineConfig({
         '@shared': resolve('src/shared')
       }
     },
+    // The CSP's default-src 'self' refuses data: URLs, which is how Vite would
+    // otherwise inline small assets such as the tiniest font subsets.
+    build: {
+      assetsInlineLimit: 0
+    },
     plugins: [react()]
   }
 })

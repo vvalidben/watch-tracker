@@ -8,6 +8,8 @@ export interface EpisodeWithProgress {
   airDate: string | null
   runtimeMinutes: number | null
   watched: boolean
+  /** Most recent watch date, kept even after the episode is later marked unwatched. */
+  watchedAt: string | null
   rating: number | null
   /** Total times marked watched, rewatches included (0 if never watched). */
   watchCount: number
@@ -85,6 +87,7 @@ export function useEpisodes(
       return {
         ...episode,
         watched: progress?.watched ?? false,
+        watchedAt: progress?.watchedAt ?? null,
         rating: progress?.rating ?? null,
         watchCount: progress?.watchCount ?? 0,
         notes: progress?.notes ?? null
@@ -136,7 +139,11 @@ export function useEpisodes(
       }
       // Reconcile with the server's authoritative watchCount rather than trust the optimistic bump.
       setEpisodes((prev) =>
-        prev.map((e) => (e.episodeNumber === episodeNumber ? { ...e, watchCount: result.data.progress.watchCount } : e))
+        prev.map((e) =>
+          e.episodeNumber === episodeNumber
+            ? { ...e, watchCount: result.data.progress.watchCount, watchedAt: result.data.progress.watchedAt }
+            : e
+        )
       )
       onWatchedChange?.()
     } finally {

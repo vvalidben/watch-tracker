@@ -4,9 +4,8 @@ import { Dashboard } from '@renderer/pages/Dashboard'
 import { Library } from '@renderer/pages/Library'
 import { Search } from '@renderer/pages/Search'
 import { MediaDetail } from '@renderer/pages/MediaDetail'
-import { Watching } from '@renderer/pages/Watching'
-import { Completed } from '@renderer/pages/Completed'
 import { Watchlist } from '@renderer/pages/Watchlist'
+import { WatchLog } from '@renderer/pages/WatchLog'
 import { Statistics } from '@renderer/pages/Statistics'
 import { Settings } from '@renderer/pages/Settings'
 import { DatabaseErrorScreen } from '@renderer/pages/DatabaseErrorScreen'
@@ -33,9 +32,8 @@ function App(): JSX.Element {
           <Route path="library" element={<Library />} />
           <Route path="search" element={<Search />} />
           <Route path="media/:source/:mediaType/:externalId" element={<MediaDetail />} />
-          <Route path="watching" element={<Watching />} />
-          <Route path="completed" element={<Completed />} />
           <Route path="watchlist" element={<Watchlist />} />
+          <Route path="log" element={<WatchLog />} />
           <Route path="statistics" element={<Statistics />} />
           <Route path="settings" element={<Settings />} />
         </Route>

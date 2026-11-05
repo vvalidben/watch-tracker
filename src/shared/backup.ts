@@ -28,6 +28,12 @@ export interface BackupMediaItem {
   type: BackupMediaType
   title: string
   originalTitle: string | null
+  /**
+   * Optional rather than a format bump: it's provider metadata, not personal
+   * data, and a backup without it is still complete. Restoring one lets the
+   * anime title backfill fetch it again.
+   */
+  romajiTitle?: string | null
   overview: string | null
   posterPath: string | null
   backdropPath: string | null
@@ -220,6 +226,7 @@ function mediaItemRowError(row: unknown): string | null {
   if (row.type !== 'movie' && row.type !== 'tv' && row.type !== 'anime') return 'invalid type'
   if (typeof row.title !== 'string') return 'title must be a string'
   if (!isStringOrNull(row.originalTitle)) return 'originalTitle must be a string or null'
+  if (row.romajiTitle !== undefined && !isStringOrNull(row.romajiTitle)) return 'romajiTitle must be a string or null'
   if (row.source !== 'tmdb' && row.source !== 'anilist' && row.source !== 'manual') return 'invalid source'
   if (!isStringOrNull(row.sourceId)) return 'sourceId must be a string or null'
   if (!isStringArrayOrNull(row.genres)) return 'genres must be a string array or null'

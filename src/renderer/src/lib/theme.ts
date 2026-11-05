@@ -7,7 +7,7 @@ export type ResolvedTheme = 'light' | 'dark'
 const isThemePreference = (value: string): value is ThemePreference =>
   value === 'light' || value === 'dark' || value === 'system'
 
-const store = createPersistedPreference<ThemePreference>('watch-tracker-theme', 'system', isThemePreference)
+const store = createPersistedPreference<ThemePreference>('watch-tracker-theme', 'dark', isThemePreference)
 
 export function resolveTheme(preference: ThemePreference): ResolvedTheme {
   if (preference === 'system') {

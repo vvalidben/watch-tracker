@@ -10,8 +10,11 @@ import { registerLibraryIpc } from './ipc/library'
 import { registerDashboardIpc } from './ipc/dashboard'
 import { registerTagsIpc } from './ipc/tags'
 import { registerStatisticsIpc } from './ipc/statistics'
+import { registerWatchLogIpc } from './ipc/watchLog'
 import { registerBackupIpc } from './ipc/backup'
 import { registerAppIpc } from './ipc/app'
+import { runAnimeTitleBackfillOnce } from './library/backfillOriginalTitles'
+import { fetchAniListTitleNames } from './metadata/anilistProvider'
 import type { AppDatabase } from './db/client'
 import type { DatabaseStatusDTO } from '@shared/settings'
 
@@ -139,8 +142,15 @@ app
       registerDashboardIpc(repositories)
       registerTagsIpc(repositories)
       registerStatisticsIpc(repositories)
+      registerWatchLogIpc(repositories)
       registerBackupIpc({ db: handle.db, dbPath: handle.dbPath, migrationsFolder: handle.migrationsFolder, configPath })
       registerAppIpc({ repositories, dbPath: handle.dbPath, configPath })
+      // Runs in the background so a slow or missing connection can't hold up the window.
+      void runAnimeTitleBackfillOnce({
+        repositories,
+        configPath,
+        fetchTitles: (ids) => fetchAniListTitleNames(ids, { apiUrl: process.env.ANILIST_API_URL })
+      })
       databaseStatus = {
         ok: true,
         recoveredFromCorruption: handle.recoveredFrom !== null,

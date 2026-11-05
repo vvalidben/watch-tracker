@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { createAniListProvider } from './anilistProvider'
+import { createAniListProvider, fetchAniListTitleNames } from './anilistProvider'
 
 function jsonResponse(body: unknown, status = 200): Response {
   return { ok: status < 400, status, headers: new Headers(), json: async () => body } as Response
@@ -43,6 +43,7 @@ describe('anilistProvider', () => {
       mediaType: 'anime',
       title: 'Frieren: Beyond Journey’s End',
       originalTitle: 'Sousou no Frieren',
+      romajiTitle: 'Sousou no Frieren',
       poster: 'https://cdn.test/frieren.jpg',
       backdrop: 'https://cdn.test/frieren-banner.jpg',
       description: 'Frieren the elf mage...',
@@ -53,6 +54,37 @@ describe('anilistProvider', () => {
       numberOfSeasons: null,
       numberOfEpisodes: 28
     })
+  })
+
+  it('prefers the native title as the original title, even when romaji is the display title', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        data: {
+          Page: {
+            media: [
+              {
+                id: 2,
+                title: { romaji: 'Mushishi', english: null, native: '蟲師' },
+                description: null,
+                coverImage: null,
+                bannerImage: null,
+                startDate: null,
+                genres: [],
+                averageScore: null,
+                episodes: null
+              }
+            ]
+          }
+        }
+      })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const [result] = await createAniListProvider().search('mushishi', 'anime')
+
+    expect(result.title).toBe('Mushishi')
+    expect(result.originalTitle).toBe('蟲師')
+    expect(String(JSON.parse(fetchMock.mock.calls[0][1].body).query)).toContain('native')
   })
 
   it('falls back to the romaji title when no English title exists', async () => {
@@ -306,5 +338,37 @@ describe('anilistProvider', () => {
 
     expect(episodes).toEqual([])
     expect(fetchMock).not.toHaveBeenCalled()
+  })
+})
+
+describe('fetchAniListTitleNames', () => {
+  it('returns each title\'s native and romaji names keyed by id', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        data: {
+          Page: {
+            media: [
+              { id: 154587, title: { native: '葬送のフリーレン', romaji: 'Sousou no Frieren' } },
+              { id: 2, title: { native: null, romaji: 'Only Romaji' } }
+            ]
+          }
+        }
+      })
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const names = await fetchAniListTitleNames(['154587', '2', '999'])
+
+    expect([...names]).toEqual([
+      ['154587', { native: '葬送のフリーレン', romaji: 'Sousou no Frieren' }],
+      ['2', { native: null, romaji: 'Only Romaji' }]
+    ])
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).variables).toEqual({ ids: [154587, 2, 999], perPage: 3 })
+  })
+
+  it('throws when AniList responds with GraphQL errors and no data', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(jsonResponse({ data: null, errors: [{ message: 'Too many requests.' }] })))
+
+    await expect(fetchAniListTitleNames(['1'])).rejects.toThrow('Too many requests.')
   })
 })

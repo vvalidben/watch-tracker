@@ -39,7 +39,7 @@ function StarControl({ starNumber, value, starSize, readOnly, precision, onChang
       <Star className={cn(starSize, 'text-muted-foreground')} />
       {fillWidth !== '0%' && (
         <span className="pointer-events-none absolute inset-0 overflow-hidden" style={{ width: fillWidth }}>
-          <Star className={cn(starSize, 'fill-primary text-primary')} />
+          <Star className={cn(starSize, 'fill-[#ffd84a] text-[#ffd84a]')} />
         </span>
       )}
       {!readOnly &&
@@ -100,7 +100,9 @@ export function RatingStars({
           onChange={onChange}
         />
       ))}
-      {value !== null && <span className="ml-1 text-xs text-muted-foreground">{value.toFixed(1)}</span>}
+      {value !== null && (
+        <span className={cn('wt-display ml-2', size === 'sm' ? 'text-xs' : 'text-[22px] leading-none')}>{value.toFixed(1)}</span>
+      )}
       {!readOnly && clearable && value !== null && (
         <button
           type="button"

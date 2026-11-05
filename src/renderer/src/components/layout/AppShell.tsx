@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
-import { Header } from './Header'
+import { Petals, RouteWipe, Ticker } from './Ambience'
 import { RecoveryBanner } from './RecoveryBanner'
 import { useGlobalKeyboardShortcuts } from '@renderer/hooks/useGlobalKeyboardShortcuts'
 import { TooltipProvider } from '@renderer/components/ui/tooltip'
@@ -50,21 +50,20 @@ export function AppShell(): JSX.Element {
 
   return (
     <TooltipProvider>
-      <div className="flex h-screen w-screen overflow-hidden bg-background text-foreground">
+      <div className="wt-app">
+        <Petals />
+        <RouteWipe />
         <Sidebar />
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <Header />
+        <main ref={mainRef} className="wt-scroll">
+          <Ticker />
           <RecoveryBanner />
-          <main ref={mainRef} className="flex-1 overflow-y-auto p-6 lg:p-8">
-            {/* Keyed by route so each page gets a fresh, brief fade-in — skipped entirely under prefers-reduced-motion. */}
-            <div
-              key={location.pathname}
-              className="mx-auto max-w-[1600px] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300"
-            >
+          <div className="wt-main">
+            {/* Keyed by route so each page replays its entrance animations. */}
+            <div key={location.pathname} className="wt-content">
               <Outlet />
             </div>
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </TooltipProvider>
   )

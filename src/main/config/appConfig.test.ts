@@ -36,6 +36,11 @@ describe('readAppConfig', () => {
     expect(readAppConfig(filePath).tmdbApiKey).toBeNull()
   })
 
+  it('remembers that the anime title backfill finished', () => {
+    writeAppConfig(filePath, { tmdbApiKey: null, defaultBackupDirectory: null, animeTitleBackfillDone: true })
+    expect(readAppConfig(filePath).animeTitleBackfillDone).toBe(true)
+  })
+
   it('round-trips a real config written by writeAppConfig', () => {
     writeAppConfig(filePath, { tmdbApiKey: 'abc123', defaultBackupDirectory: '/backups' })
     expect(readAppConfig(filePath)).toEqual({ tmdbApiKey: 'abc123', defaultBackupDirectory: '/backups' })

@@ -54,6 +54,7 @@ import type {
 } from '@shared/tags'
 import type { GetDashboardResponse } from '@shared/dashboard'
 import type { GetStatisticsResponse } from '@shared/statistics'
+import type { GetWatchLogResponse } from '@shared/watchLog'
 import type { ExportBackupResult, ImportBackupResult } from '@shared/backup'
 import type { AppConfigDTO, DatabaseInfoDTO, DatabaseStatusDTO, SetTmdbApiKeyRequest } from '@shared/settings'
 import type { IpcResult } from '@shared/ipcResult'
@@ -152,6 +153,8 @@ const api = {
     ipcRenderer.invoke('tags:detachFromMedia', request),
 
   getStatistics: (): Promise<GetStatisticsResponse> => ipcRenderer.invoke('statistics:get'),
+
+  getWatchLog: (): Promise<GetWatchLogResponse> => ipcRenderer.invoke('watchLog:get'),
 
   exportBackup: (): Promise<IpcResult<ExportBackupResult>> => ipcRenderer.invoke('backup:export'),
 

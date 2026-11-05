@@ -15,7 +15,7 @@ interface AniListFuzzyDate {
 
 interface AniListMedia {
   id: number
-  title: { romaji: string | null; english: string | null }
+  title: { romaji: string | null; english: string | null; native?: string | null }
   description: string | null
   coverImage: { large: string | null } | null
   bannerImage: string | null
@@ -41,7 +41,7 @@ const SEARCH_QUERY = `
     Page(perPage: $perPage) {
       media(search: $search, type: ANIME) {
         id
-        title { romaji english }
+        title { romaji english native }
         description(asHtml: false)
         coverImage { large }
         bannerImage
@@ -59,7 +59,7 @@ const DETAILS_QUERY = `
   query ($id: Int) {
     Media(id: $id, type: ANIME) {
       id
-      title { romaji english }
+      title { romaji english native }
       description(asHtml: false)
       coverImage { large }
       bannerImage
@@ -84,6 +84,33 @@ const EPISODES_QUERY = `
     }
   }
 `
+
+const TITLE_NAMES_QUERY = `
+  query ($ids: [Int], $perPage: Int) {
+    Page(perPage: $perPage) {
+      media(id_in: $ids, type: ANIME) {
+        id
+        title { romaji native }
+      }
+    }
+  }
+`
+
+const DEFAULT_API_URL = 'https://graphql.anilist.co'
+
+async function queryAniList<T>(apiUrl: string, graphqlQuery: string, variables: Record<string, unknown>): Promise<T> {
+  const response = await fetchJson<AniListGraphQLResponse<T>>(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({ query: graphqlQuery, variables })
+  })
+
+  if (!response.data) {
+    const message = response.errors?.map((e) => e.message).join('; ') || 'AniList returned no data'
+    throw new ProviderError('unknown', message)
+  }
+  return response.data
+}
 
 function formatStartDate(date: AniListFuzzyDate | null): string | null {
   if (!date?.year) return null
@@ -135,7 +162,8 @@ function parseStreamingTitle(raw: string | null, fallbackNumber: number): { numb
 
 function normalize(media: AniListMedia): NormalizedMedia {
   const title = media.title.english ?? media.title.romaji ?? 'Untitled'
-  const originalTitle = media.title.romaji && media.title.romaji !== title ? media.title.romaji : null
+  const original = media.title.native ?? media.title.romaji
+  const originalTitle = original && original !== title ? original : null
 
   return {
     externalId: String(media.id),
@@ -143,6 +171,7 @@ function normalize(media: AniListMedia): NormalizedMedia {
     mediaType: 'anime',
     title,
     originalTitle,
+    romajiTitle: media.title.romaji ?? null,
     poster: media.coverImage?.large ?? null,
     backdrop: media.bannerImage ?? null,
     description: cleanDescription(media.description),
@@ -155,21 +184,26 @@ function normalize(media: AniListMedia): NormalizedMedia {
   }
 }
 
+export interface AnimeTitleNames {
+  native: string | null
+  romaji: string | null
+}
+
+/** Native and romaji names for up to 50 AniList ids (one page of results), keyed by id. */
+export async function fetchAniListTitleNames(ids: string[], config: AniListConfig = {}): Promise<Map<string, AnimeTitleNames>> {
+  const data = await queryAniList<{ Page: { media: { id: number; title: AnimeTitleNames }[] } }>(
+    config.apiUrl ?? DEFAULT_API_URL,
+    TITLE_NAMES_QUERY,
+    { ids: ids.map(Number), perPage: ids.length }
+  )
+  return new Map(data.Page.media.map((media) => [String(media.id), media.title]))
+}
+
 export function createAniListProvider(config: AniListConfig = {}): MediaSearchProvider {
-  const apiUrl = config.apiUrl ?? 'https://graphql.anilist.co'
+  const apiUrl = config.apiUrl ?? DEFAULT_API_URL
 
-  async function query<T>(graphqlQuery: string, variables: Record<string, unknown>): Promise<T> {
-    const response = await fetchJson<AniListGraphQLResponse<T>>(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ query: graphqlQuery, variables })
-    })
-
-    if (!response.data) {
-      const message = response.errors?.map((e) => e.message).join('; ') || 'AniList returned no data'
-      throw new ProviderError('unknown', message)
-    }
-    return response.data
+  function query<T>(graphqlQuery: string, variables: Record<string, unknown>): Promise<T> {
+    return queryAniList<T>(apiUrl, graphqlQuery, variables)
   }
 
   return {

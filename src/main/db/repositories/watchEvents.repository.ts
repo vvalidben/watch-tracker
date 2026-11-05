@@ -1,6 +1,6 @@
 import { and, asc, count, desc, eq, getTableColumns, inArray, isNull, max } from 'drizzle-orm'
 import type { DbContext } from '../context'
-import { watchEvents } from '../schema'
+import { episodes, seasons, watchEvents } from '../schema'
 import type { WatchEvent } from '../types'
 
 const columns = getTableColumns(watchEvents)
@@ -9,6 +9,13 @@ export interface RecentWatchEvent {
   mediaItemId: number
   episodeId: number | null
   watchedAt: string
+}
+
+export interface WatchLogEvent {
+  mediaItemId: number
+  watchedAt: string
+  seasonNumber: number | null
+  episodeNumber: number | null
 }
 
 /**
@@ -110,6 +117,28 @@ export function createWatchEventsRepository({ db, persist }: DbContext) {
         .select({ mediaItemId: watchEvents.mediaItemId, episodeId: watchEvents.episodeId, watchedAt: watchEvents.watchedAt })
         .from(watchEvents)
         .where(inArray(watchEvents.mediaItemId, mediaItemIds))
+    },
+
+    /**
+     * Every watch event for the given media items, newest first, resolved to
+     * season and episode numbers for the Watch log. A bulk "mark season
+     * watched" gives many events one timestamp, so the secondary ordering is
+     * what keeps those in a sensible order.
+     */
+    async listLogForMediaItems(mediaItemIds: number[]): Promise<WatchLogEvent[]> {
+      if (mediaItemIds.length === 0) return []
+      return db
+        .select({
+          mediaItemId: watchEvents.mediaItemId,
+          watchedAt: watchEvents.watchedAt,
+          seasonNumber: seasons.seasonNumber,
+          episodeNumber: episodes.episodeNumber
+        })
+        .from(watchEvents)
+        .leftJoin(episodes, eq(watchEvents.episodeId, episodes.id))
+        .leftJoin(seasons, eq(episodes.seasonId, seasons.id))
+        .where(inArray(watchEvents.mediaItemId, mediaItemIds))
+        .orderBy(desc(watchEvents.watchedAt), desc(seasons.seasonNumber), desc(episodes.episodeNumber))
     }
   }
 }

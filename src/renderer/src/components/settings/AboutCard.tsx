@@ -1,54 +1,22 @@
-import { useEffect, useState } from 'react'
-import { Badge } from '@renderer/components/ui/badge'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@renderer/components/ui/card'
-
 const SHORTCUTS: { keys: string; description: string }[] = [
-  { keys: '/', description: 'Jump to Search' },
-  { keys: 'Esc', description: 'Go back, from a title’s details page' }
+  { keys: '/', description: 'Jump to Add a title' },
+  { keys: 'Esc', description: 'Go back from a title’s details' }
 ]
 
-function Kbd({ children }: { children: string }): JSX.Element {
-  return (
-    <kbd className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-xs font-medium text-foreground shadow-sm">
-      {children}
-    </kbd>
-  )
-}
-
 export function AboutCard(): JSX.Element {
-  const [version, setVersion] = useState('')
-
-  useEffect(() => {
-    window.api
-      .getAppVersion()
-      .then(setVersion)
-      .catch(() => setVersion('unknown'))
-  }, [])
-
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
-        <div className="space-y-1.5">
-          <CardTitle>About</CardTitle>
-          <CardDescription>Version info and shortcuts, for reference.</CardDescription>
+    <div className="wt-panel wt-stack wt-rise" style={{ padding: 24, gap: 10, animationDelay: '300ms' }}>
+      <h2 className="wt-h3" style={{ marginBottom: 6 }}>
+        Keyboard shortcuts
+      </h2>
+      {SHORTCUTS.map((shortcut) => (
+        <div key={shortcut.keys} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 14 }}>
+          <span style={{ color: 'var(--wt-muted)' }}>{shortcut.description}</span>
+          <kbd className="wt-display" style={{ padding: '2px 8px', borderRadius: 8, background: 'var(--wt-sunken)', border: '1.5px solid var(--wt-line-strong)', fontSize: 12 }}>
+            {shortcut.keys}
+          </kbd>
         </div>
-        <Badge variant="secondary" className="shrink-0">
-          v{version || '…'}
-        </Badge>
-      </CardHeader>
-      <CardContent>
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Keyboard Shortcuts
-        </p>
-        <div className="space-y-1.5">
-          {SHORTCUTS.map((shortcut) => (
-            <div key={shortcut.keys} className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{shortcut.description}</span>
-              <Kbd>{shortcut.keys}</Kbd>
-            </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+      ))}
+    </div>
   )
 }

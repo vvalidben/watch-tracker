@@ -1,6 +1,5 @@
 import type { WatchStatus } from '@shared/library'
 import { WATCH_STATUSES, watchStatusLabel } from '@renderer/lib/mediaFormatting'
-import { cn } from '@renderer/lib/utils'
 
 interface WatchStatusSelectProps {
   value: WatchStatus | null
@@ -20,11 +19,9 @@ export function WatchStatusSelect({ value, onChange, disabled }: WatchStatusSele
       value={value ?? ''}
       disabled={disabled}
       onChange={(event) => onChange(event.target.value as WatchStatus)}
-      className={cn(
-        'h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm transition-colors',
-        'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
-        'disabled:cursor-not-allowed disabled:opacity-50'
-      )}
+      aria-label="Watch status"
+      className="wt-select"
+      style={{ padding: '6px 10px', borderRadius: 10, fontWeight: 700 }}
     >
       {!value && (
         <option value="" disabled>

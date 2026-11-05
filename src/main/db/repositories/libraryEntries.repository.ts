@@ -9,7 +9,7 @@ export interface LibraryViewFilter {
   watchStatus?: WatchStatus
   favorite?: boolean
   type?: MediaType
-  /** Matches against title/originalTitle. SQLite's LIKE is already case-insensitive for ASCII. */
+  /** Matches against title/originalTitle/romajiTitle. SQLite's LIKE is already case-insensitive for ASCII. */
   search?: string
   /** Restricts to these media items — used for the tag filter (resolved to ids by the caller). */
   mediaItemIds?: number[]
@@ -144,7 +144,7 @@ export function createLibraryEntriesRepository({ db, persist }: DbContext) {
       if (filter.mediaItemIds) conditions.push(inArray(mediaItems.id, filter.mediaItemIds))
       if (filter.search && filter.search.trim().length > 0) {
         const pattern = `%${filter.search.trim()}%`
-        conditions.push(or(like(mediaItems.title, pattern), like(mediaItems.originalTitle, pattern)))
+        conditions.push(or(like(mediaItems.title, pattern), like(mediaItems.originalTitle, pattern), like(mediaItems.romajiTitle, pattern)))
       }
 
       const rows = await db

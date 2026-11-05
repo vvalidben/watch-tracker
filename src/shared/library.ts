@@ -280,7 +280,7 @@ export interface ListLibraryRequest {
   favoritesOnly?: boolean
   /** Restricts to items tagged with this tag. */
   tagId?: number
-  /** Matches against title/originalTitle, case-insensitive. */
+  /** Matches against title/originalTitle/romajiTitle, case-insensitive. */
   search?: string
   sort?: LibrarySortKey
 }
