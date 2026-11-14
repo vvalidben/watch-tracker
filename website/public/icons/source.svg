@@ -1,0 +1,46 @@
+<svg width="1024" height="1024" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sunburst TV: option 1a of "App Icon.dc.html" in the Claude Design project. -->
+  <defs>
+    <clipPath id="clipA"><rect width="256" height="256" rx="58"/></clipPath>
+    <pattern id="dotA" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="5.5" cy="5.5" r="2.2" fill="#07050d"/></pattern>
+  </defs>
+  <g clip-path="url(#clipA)">
+    <rect width="256" height="256" fill="#ffd84a"/>
+
+    <!-- Manga rays -->
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(0 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(22.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(45 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(67.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(90 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(112.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(135 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(157.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(180 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(202.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(225 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(247.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(270 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(292.5 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(315 128 140)"/>
+    <path d="M128 140 L116 -220 L140 -220 Z" fill="#ffffff" opacity="0.38" transform="rotate(337.5 128 140)"/>
+
+    <!-- Halftone band and sparkle -->
+    <rect y="196" width="256" height="60" fill="url(#dotA)" opacity="0.16"/>
+    <path d="M206 26 Q210 46 230 50 Q210 54 206 74 Q202 54 182 50 Q202 46 206 26Z" fill="#ffffff" stroke="#07050d" stroke-width="4" stroke-linejoin="round"/>
+
+    <!-- Antennae -->
+    <line x1="128" y1="84" x2="94" y2="46" stroke="#07050d" stroke-width="10" stroke-linecap="round"/>
+    <line x1="128" y1="84" x2="160" y2="48" stroke="#07050d" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="92" cy="44" r="10" fill="#ff4f9a" stroke="#07050d" stroke-width="6"/>
+
+    <!-- Set, with its hard shadow -->
+    <rect x="46" y="92" width="176" height="128" rx="28" fill="#07050d"/>
+    <rect x="36" y="82" width="176" height="128" rx="28" fill="#ff4f9a" stroke="#07050d" stroke-width="9"/>
+    <rect x="56" y="100" width="136" height="92" rx="14" fill="#0e0b1a"/>
+    <path d="M60 106 L96 106 L68 186 L60 186 Z" fill="#ffffff" opacity="0.1"/>
+
+    <!-- Play button -->
+    <path d="M110 122 L152 146 L110 170 Z" fill="#38e1ff" stroke="#38e1ff" stroke-width="8" stroke-linejoin="round"/>
+  </g>
+</svg>

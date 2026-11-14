@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.wrangler/
+.local-data/
+src/server/generated/
+.env
+.env.*
+!.env.example
+*.log
+.openai/*.local.*
+.openai/*credential*

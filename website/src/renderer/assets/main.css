@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 278 100% 98%;
+    --foreground: 251 42% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 251 42% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 251 42% 14%;
+    --primary: 334 100% 65%;
+    --primary-foreground: 255 44% 4%;
+    --secondary: 263 62% 95%;
+    --secondary-foreground: 251 42% 14%;
+    --muted: 263 62% 95%;
+    --muted-foreground: 255 20% 46%;
+    --accent: 263 62% 95%;
+    --accent-foreground: 251 42% 14%;
+    --destructive: 332 82% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 191 86% 32%;
+    --success-foreground: 0 0% 100%;
+    --favorite: 332 82% 45%;
+    --border: 251 20% 86%;
+    --input: 251 20% 78%;
+    --ring: 189 100% 61%;
+    --sidebar: 278 100% 98%;
+    --sidebar-border: 251 20% 86%;
+    --radius: 0.85rem;
+  }
+
+  .dark {
+    --background: 252 41% 7%;
+    --foreground: 260 100% 97%;
+    --card: 250 38% 12%;
+    --card-foreground: 260 100% 97%;
+    --popover: 250 38% 12%;
+    --popover-foreground: 260 100% 97%;
+    --primary: 334 100% 65%;
+    --primary-foreground: 255 44% 4%;
+    --secondary: 252 40% 17%;
+    --secondary-foreground: 260 100% 97%;
+    --muted: 252 40% 17%;
+    --muted-foreground: 254 28% 71%;
+    --accent: 252 40% 17%;
+    --accent-foreground: 260 100% 97%;
+    --destructive: 334 100% 65%;
+    --destructive-foreground: 255 44% 4%;
+    --success: 189 100% 61%;
+    --success-foreground: 255 44% 4%;
+    --favorite: 334 100% 65%;
+    --border: 252 24% 20%;
+    --input: 252 24% 24%;
+    --ring: 189 100% 61%;
+    --sidebar: 252 41% 7%;
+    --sidebar-border: 252 24% 20%;
+    --radius: 0.85rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    margin: 0;
+    font-family:
+      'Zen Kaku Gothic New',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      sans-serif;
+  }
+
+  /* Subtle themed scrollbars — avoids the jarring default OS scrollbar clashing with a dark UI. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--muted-foreground) / 0.25);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--muted-foreground) / 0.4);
+  }
+}
+
+@layer utilities {
+  /* A single reusable dark gradient for legibility over backdrop/hero imagery. */
+  .bg-hero-fade {
+    background: linear-gradient(
+      to top,
+      hsl(var(--background)) 0%,
+      hsl(var(--background) / 0.85) 30%,
+      hsl(var(--background) / 0.25) 65%,
+      transparent 100%
+    );
+  }
+  .bg-hero-fade-x {
+    background: linear-gradient(to right, hsl(var(--background)) 0%, transparent 55%);
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}

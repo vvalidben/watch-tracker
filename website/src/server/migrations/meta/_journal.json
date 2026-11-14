@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789352539479,
+      "tag": "0000_silky_trauma",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789394454439,
+      "tag": "0001_mysterious_the_liberteens",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789397669129,
+      "tag": "0002_tearful_mach_iv",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1789406809913,
+      "tag": "0003_robust_purple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1793885812010,
+      "tag": "0004_large_trish_tilby",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794401623870,
+      "tag": "0005_lonely_scarlet_spider",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794402612718,
+      "tag": "0006_purple_paibok",
+      "breakpoints": true
+    }
+  ]
+}

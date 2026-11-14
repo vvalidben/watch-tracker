@@ -1,0 +1,73 @@
+import { CloudSync } from './CloudSync'
+import { AppearanceMenu } from '@renderer/components/settings/AppearanceCard'
+import { useEffect, useRef } from 'react'
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom'
+import { Sidebar } from './Sidebar'
+import { Petals, RouteWipe, Ticker } from './Ambience'
+import { RecoveryBanner } from './RecoveryBanner'
+import { useGlobalKeyboardShortcuts } from '@renderer/hooks/useGlobalKeyboardShortcuts'
+import { TooltipProvider } from '@renderer/components/ui/tooltip'
+
+export function AppShell(): JSX.Element {
+  useGlobalKeyboardShortcuts()
+  const location = useLocation()
+  const navigationType = useNavigationType()
+  const mainRef = useRef<HTMLElement>(null)
+  // Keyed by pathname rather than the full history-entry key: pages like
+  // Search update their own URL query params via history *replace* while
+  // the user types (see useMediaSearch), which mints a new location.key on
+  // every keystroke without actually changing page — keying on that would
+  // scroll the page to the top on every keystroke instead of only on real
+  // page-to-page navigation.
+  const scrollPositions = useRef(new Map<string, number>())
+
+  // Restore (on POP) or reset (on PUSH/REPLACE-to-a-new-page) scroll when
+  // the page itself changes.
+  useEffect(() => {
+    const node = mainRef.current
+    if (!node) return
+    const restored = navigationType === 'POP' ? scrollPositions.current.get(location.pathname) : undefined
+    node.scrollTo(0, restored ?? 0)
+  }, [location.pathname, navigationType])
+
+  // Continuously record the current page's scroll offset as the user
+  // scrolls, rather than trying to read it once when leaving: the outgoing
+  // page's content unmounts (see the `key={location.pathname}` below) as
+  // part of the very same commit that swaps in the new route, which resets
+  // scrollTop to 0 *before* any effect cleanup gets a chance to read it —
+  // so by then it's already too late to capture. Recording it live sidesteps
+  // that race entirely.
+  useEffect(() => {
+    const node = mainRef.current
+    if (!node) return
+    const positions = scrollPositions.current
+    const pathname = location.pathname
+
+    function handleScroll(): void {
+      positions.set(pathname, node!.scrollTop)
+    }
+    node.addEventListener('scroll', handleScroll, { passive: true })
+    return () => node.removeEventListener('scroll', handleScroll)
+  }, [location.pathname])
+
+  return (
+    <TooltipProvider>
+      <div className="wt-app">
+        <Petals />
+        <RouteWipe />
+        <Sidebar />
+        <main ref={mainRef} className="wt-scroll">
+          <div className="wt-web-topbar"><strong>WATCH TRACKER</strong><span><CloudSync /><AppearanceMenu iconOnly /></span></div>
+          <Ticker />
+          <RecoveryBanner />
+          <div className="wt-main">
+            {/* Keyed by route so each page replays its entrance animations. */}
+            <div key={location.pathname} className="wt-content">
+              <Outlet />
+            </div>
+          </div>
+        </main>
+      </div>
+    </TooltipProvider>
+  )
+}
